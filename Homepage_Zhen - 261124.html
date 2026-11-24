@@ -1,0 +1,1444 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Zhen Jiang · Homepage</title>
+<style>
+/* ============================================================
+   配色与全局变量（想换主题色只改这里）
+   ============================================================ */
+:root{
+  --bg:#eef2f7;
+  --card:#ffffff;
+  --text:#1f2933;
+  --muted:#64748b;
+  --line:#e2e8f0;
+  --accent:#2563eb;
+  --accent-soft:#e0ecff;
+  --radius:14px;
+  --shadow:0 1px 3px rgba(15,23,42,.06), 0 8px 24px rgba(15,23,42,.06);
+}
+
+*,*::before,*::after{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{
+  margin:0;
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC",
+              "Hiragino Sans GB","Microsoft YaHei",sans-serif;
+  background:var(--bg);
+  color:var(--text);
+  font-size:15px;
+  line-height:1.7;
+  -webkit-font-smoothing:antialiased;
+}
+a{color:var(--accent);text-decoration:none}
+img{max-width:100%}
+
+.wrap{max-width:1120px;margin:0 auto;padding:20px 16px 48px}
+
+/* ============================================================
+   语言切换按钮（位于顶部大横栏右上角）
+   ============================================================ */
+.lang-toggle{
+  position:absolute;
+  top:14px;right:14px;
+  z-index:10;
+  display:inline-flex;align-items:center;justify-content:center;
+  min-width:52px;
+  padding:7px 14px;
+  border:1px solid rgba(255,255,255,.75);
+  border-radius:999px;
+  background:rgba(255,255,255,.95);
+  color:#1e3a8a;
+  font-family:inherit;
+  font-size:.82rem;
+  font-weight:700;
+  letter-spacing:.5px;
+  cursor:pointer;
+  box-shadow:0 2px 10px rgba(15,23,42,.22);
+  transition:transform .18s, background .18s, box-shadow .18s;
+}
+.lang-toggle:hover{
+  background:#fff;
+  transform:translateY(-1px);
+  box-shadow:0 4px 14px rgba(15,23,42,.28);
+}
+.lang-toggle:active{transform:translateY(0)}
+
+/* ============================================================
+   1. 顶部大横栏（M51 星系背景 + 深色遮罩）
+   ============================================================ */
+.hero{
+  position:relative;
+  display:flex;
+  align-items:center;
+  padding:28px;
+  border-radius:18px;
+  overflow:hidden;
+  color:#fff;
+  background-color:#0b1a3a;                 /* 图片加载前的底色 */
+  background-size:cover;                     /* JS 会注入背景图 */
+  background-position:center 42%;
+  background-repeat:no-repeat;
+  box-shadow:0 10px 30px rgba(10,20,60,.35);
+}
+/* hero 内部真正的内容区（头像 + 信息），按钮不在此区域 */
+.hero-main{
+  position:relative;
+  z-index:2;
+  display:flex;
+  align-items:center;
+  gap:26px;
+  width:100%;
+  min-width:0;
+}
+.hero .avatar{
+  width:132px;height:132px;
+  flex:0 0 auto;
+  object-fit:cover;
+  border-radius:50%;
+  border:4px solid rgba(255,255,255,.8);
+  background:#fff;
+  box-shadow:0 6px 20px rgba(0,0,0,.28);
+}
+.hero-info{flex:1;min-width:0}
+.hero-info h1{margin:0 0 6px;font-size:1.85rem;letter-spacing:1px;line-height:1.25}
+.hero-info .subtitle{margin:0 0 4px;font-size:1rem;opacity:.95}
+.hero-info .affil{margin:0;font-size:.88rem;opacity:.85}
+/* 横栏背景图出处（右下角） */
+#heroCredit{position:absolute;right:16px;bottom:12px;z-index:3;text-align:right}
+.hero-credit{
+  font-size:.68rem;
+  line-height:1.4;
+  color:rgba(255,255,255,.62);
+  text-decoration:none;
+  letter-spacing:.2px;
+  text-shadow:0 1px 3px rgba(0,0,0,.55);
+  transition:color .18s;
+}
+a.hero-credit:hover{color:rgba(255,255,255,.95)}
+
+/* 联系方式（已并入横栏，位于实验室信息下方） */
+.contact-bar{
+  display:flex;flex-wrap:wrap;gap:9px;
+  margin-top:16px;
+}
+.contact-item{
+  display:inline-flex;align-items:center;gap:7px;
+  padding:5px 13px;
+  border-radius:999px;
+  background:rgba(255,255,255,.16);
+  border:1px solid rgba(255,255,255,.30);
+  color:#fff;
+  font-size:.8rem;
+  -webkit-backdrop-filter:blur(6px);
+  backdrop-filter:blur(6px);
+  transition:background .18s, border-color .18s, transform .18s;
+}
+.contact-item:hover{
+  background:rgba(255,255,255,.28);
+  border-color:rgba(255,255,255,.60);
+  transform:translateY(-1px);
+  color:#fff;
+}
+.contact-item svg{width:14px;height:14px;flex:0 0 auto}
+
+/* ============================================================
+   2. 主体两栏布局
+   ============================================================ */
+.layout{
+  display:grid;
+  grid-template-columns:minmax(0,330px) minmax(0,1fr);
+  gap:20px;
+  margin-top:20px;
+  align-items:start;
+}
+.col{display:flex;flex-direction:column;gap:20px;min-width:0}
+
+.card{
+  background:var(--card);
+  border-radius:var(--radius);
+  padding:20px;
+  border:1px solid rgba(226,232,240,.9);
+  box-shadow:var(--shadow);
+}
+.card-flush{padding:0;overflow:hidden}
+
+.card h2{
+  display:flex;align-items:center;gap:9px;
+  margin:0 0 15px;
+  font-size:1rem;
+  letter-spacing:.5px;
+  font-weight:700;
+}
+.card h2::before{
+  content:"";
+  width:4px;height:16px;border-radius:2px;
+  background:var(--accent);
+  flex:0 0 auto;
+}
+
+/* ---------- 教育经历 ---------- */
+.edu-item{
+  position:relative;
+  padding-left:18px;
+  padding-bottom:16px;
+  border-left:2px solid var(--line);
+}
+.edu-item:last-child{padding-bottom:0;border-left-color:transparent}
+.edu-item::before{
+  content:"";
+  position:absolute;left:-6px;top:6px;
+  width:10px;height:10px;border-radius:50%;
+  background:var(--accent);
+  box-shadow:0 0 0 3px #dbeafe;
+}
+.edu-period{font-size:.76rem;color:var(--muted);letter-spacing:.5px}
+.edu-school{font-weight:600;font-size:.94rem}
+.edu-degree{font-size:.84rem;color:var(--muted);line-height:1.55}
+
+/* ---------- 当前动态 ---------- */
+.eff-head{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:8px}
+.eff-label{font-size:.84rem;color:var(--muted)}
+.eff-score{font-size:1.65rem;font-weight:700;color:var(--accent);line-height:1}
+.eff-score .unit{font-size:.78rem;font-weight:500;color:var(--muted);margin-left:2px}
+.bar{height:8px;border-radius:99px;background:#e8eef8;overflow:hidden}
+.bar-fill{
+  height:100%;border-radius:99px;
+  background:#2563eb;                       /* 默认色，JS 会按分数覆盖 */
+  transition:width .6s ease, background .6s ease;
+}
+.eff-time{font-size:.75rem;color:var(--muted);margin-top:6px}
+
+.status-block{margin-top:16px;padding-top:16px;border-top:1px dashed var(--line)}
+.status-label{font-size:.84rem;color:var(--muted);margin-bottom:9px}
+.status-chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{
+  display:inline-flex;align-items:center;gap:6px;
+  padding:5px 11px;
+  font-size:.82rem;
+  border-radius:999px;
+  background:#f1f5f9;
+  color:#94a3b8;
+  border:1px solid transparent;
+  white-space:nowrap;
+  transition:.2s;
+}
+.chip.active{
+  background:var(--accent-soft);
+  color:var(--accent);
+  border-color:#bfdbfe;
+  font-weight:600;
+}
+
+/* ---------- 待办事项 ---------- */
+.todo{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:11px}
+.todo li{display:flex;align-items:flex-start;gap:9px;font-size:.86rem;line-height:1.55}
+.todo .more{justify-content:flex-start;color:var(--muted);letter-spacing:2px;padding-top:2px}
+.tag.ghost{background:transparent;border-color:transparent;visibility:hidden}
+.tag{
+  flex:0 0 auto;
+  min-width:58px;
+  margin-top:2px;
+  padding:1px 7px;
+  text-align:center;
+  font-size:.68rem;
+  font-weight:700;
+  letter-spacing:.2px;
+  border-radius:5px;
+}
+.tag.ongoing{background:#dcfce7;color:#15803d}
+.tag.todo{background:#fef3c7;color:#b45309}
+.todo-text{flex:1;min-width:0}
+
+/* ---------- 友情链接 ---------- */
+.link-group + .link-group{
+  margin-top:14px;
+  padding-top:14px;
+  border-top:1px dashed var(--line);
+}
+.link-group-title{
+  font-size:.76rem;
+  font-weight:700;
+  letter-spacing:.5px;
+  color:var(--muted);
+  margin-bottom:8px;
+}
+.link-list{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:7px}
+.friend-link{
+  display:block;
+  min-width:0;
+  padding:2px 0;
+  font-size:.85rem;
+  color:var(--text);
+  overflow-wrap:anywhere;
+  word-break:break-word;
+  transition:color .18s;
+}
+.friend-link:hover{color:var(--accent)}
+.friend-link-name{
+  font-weight:600;
+}
+.friend-link-name::after{
+  content:"↗";
+  display:inline-block;
+  margin-left:3px;
+  font-size:.7rem;
+  font-weight:400;
+  opacity:.5;
+  transform:translateY(-1px);
+}
+.friend-link-desc{
+  font-size:.75rem;
+  color:var(--muted);
+  margin-left:5px;
+}
+
+/* ---------- 轮播图（更扁：桌面 2:1，手机 16:9） ---------- */
+.carousel{position:relative;aspect-ratio:2/1;background:#e2e8f0;overflow:hidden}
+.slide{
+  position:absolute;inset:0;
+  opacity:0;
+  transition:opacity .8s ease;
+}
+.slide.active{opacity:1}
+.slide img{
+  display:block;
+  width:100%;height:100%;
+  object-fit:cover;
+}
+.slide-caption{
+  position:absolute;
+  left:16px;bottom:14px;
+  z-index:2;
+  max-width:calc(100% - 110px);
+  padding:5px 14px;
+  font-size:.84rem;
+  font-weight:500;
+  line-height:1.4;
+  color:#fff;
+  background:rgba(15,23,42,.55);
+  border-radius:999px;
+  -webkit-backdrop-filter:blur(6px);
+  backdrop-filter:blur(6px);
+  letter-spacing:.2px;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+/* 左右切换箭头 */
+.carousel-arrow{
+  position:absolute;
+  top:50%;
+  transform:translateY(-50%);
+  z-index:4;
+  display:flex;align-items:center;justify-content:center;
+  width:38px;height:38px;
+  padding:0;
+  border:0;
+  border-radius:50%;
+  background:rgba(15,23,42,.42);
+  color:#fff;
+  cursor:pointer;
+  -webkit-backdrop-filter:blur(6px);
+  backdrop-filter:blur(6px);
+  opacity:0;
+  transition:opacity .2s, background .2s;
+}
+.carousel-arrow.prev{left:12px}
+.carousel-arrow.next{right:12px}
+.carousel:hover .carousel-arrow,
+.carousel-arrow:focus-visible{opacity:1}
+.carousel-arrow:hover{background:rgba(15,23,42,.70)}
+.carousel-arrow svg{width:18px;height:18px}
+@media (hover:none){
+  .carousel-arrow{opacity:1}
+}
+.dots{
+  position:absolute;left:0;right:0;bottom:12px;
+  display:flex;justify-content:center;gap:8px;
+  z-index:3;
+}
+.dot{
+  width:8px;height:8px;padding:0;border:0;cursor:pointer;
+  border-radius:50%;
+  background:rgba(255,255,255,.55);
+  transition:.25s;
+}
+.dot.active{width:22px;border-radius:4px;background:#fff}
+
+/* ---------- 正文段落 ---------- */
+.para{font-size:.9rem;color:#334155;margin:0 0 10px;text-align:justify}
+.para:last-child{margin-bottom:0}
+
+/* ---------- 研究主题模块 ---------- */
+.topics{display:flex;flex-direction:column;gap:20px}
+.topic{
+  display:grid;
+  grid-template-columns:220px minmax(0,1fr);
+  gap:20px;
+  align-items:center;          /* 关键：图片随右侧变高时垂直居中 */
+}
+/* 展开后：图片固定左上浮动，文字环绕，论文用满图片下方宽度 */
+.topic.expanded{
+  display:block;
+  overflow:hidden;            /* 清除浮动，让容器包住图片和文字 */
+}
+.topic.expanded .topic-media{
+  float:left;
+  width:220px;
+  margin:0 20px 12px 0;
+  position:relative;      /* 新增 */
+  z-index:1;              /* 新增：让图片区域在文字容器之上 */
+}
+.topic.expanded .papers{
+  overflow:hidden;            /* 建立 BFC，确保论文在图片下方，不被图片挤压 */
+}
+.topic-media img{
+  display:block;width:100%;
+  aspect-ratio:3/4;            /* 纵向；觉得不够高可改 2/3，觉得太高可改 4/5 */
+  object-fit:cover;
+  border-radius:10px;
+  background:#e2e8f0;
+}
+.topic-media-caption{
+  margin-top:8px;
+  font-size:.75rem;
+  line-height:1.5;
+  color:var(--muted);
+  text-align:center;
+  letter-spacing:.2px;
+}
+/* 主题图片放大预览 */
+.topic-media img{cursor:zoom-in}
+
+.lightbox{
+  position:fixed;
+  inset:0;
+  z-index:1000;
+  display:none;
+  align-items:center;
+  justify-content:center;
+  padding:24px;
+  background:rgba(10,14,28,.9);
+  opacity:0;
+  transition:opacity .25s ease;
+}
+.lightbox.open{
+  display:flex;
+  opacity:1;
+}
+.lightbox-img{
+  max-width:92vw;
+  max-height:80vh;          /* 原为 88vh */
+  object-fit:contain;
+  border-radius:8px;
+  box-shadow:0 20px 60px rgba(0,0,0,.55);
+  transform:scale(.96);
+  transition:transform .25s ease;
+}
+.lightbox-figure{
+  margin:0;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:12px;
+  max-height:92vh;
+}
+.lightbox-caption{
+  color:rgba(255,255,255,.78);
+  font-size:.82rem;
+  line-height:1.5;
+  text-align:center;
+  max-width:80vw;
+  letter-spacing:.2px;
+}
+.lightbox-caption:empty{display:none}   /* 没有标题时不占位 */
+.lightbox.open .lightbox-img{transform:scale(1)}
+.lightbox-close{
+  position:absolute;
+  top:20px;right:24px;
+  width:42px;height:42px;
+  padding:0;
+  border:0;
+  border-radius:50%;
+  background:rgba(255,255,255,.15);
+  color:#fff;
+  font-size:1.5rem;
+  line-height:1;
+  cursor:pointer;
+  transition:background .18s;
+}
+.lightbox-close:hover{background:rgba(255,255,255,.32)}
+body.lightbox-open{overflow:hidden}
+
+@media (max-width:640px){
+  .lightbox{padding:12px}
+  .lightbox-close{top:12px;right:12px;width:36px;height:36px;font-size:1.3rem}
+  .lightbox-img{max-width:96vw;max-height:72vh}
+  .lightbox-caption{font-size:.76rem;max-width:90vw}
+}
+.topic-body{min-width:0}
+/* 介绍文字折叠 */
+/* 折叠容器：相对定位，作为按钮的定位基准 */
+.topic-text-wrap{
+  position:relative;
+}
+
+/* 文字：多行截断，末尾自动省略号 */
+.topic-text{
+  display:-webkit-box;
+  -webkit-box-orient:vertical;
+  -webkit-line-clamp:7;          /* 显示几行，按需调整 */
+  overflow:hidden;
+}
+.topic-text.expanded{
+  display:block;
+  -webkit-line-clamp:unset;
+  overflow:visible;
+}
+
+/* More 按钮：无边框，绝对定位到右下角，跟在第 4 行文字后面 */
+.topic-more{
+  display:none;
+  position:absolute;
+  right:0;
+  bottom:0;
+  padding:0 2px 0 28px;
+  border:0;
+  background:linear-gradient(to right, rgba(255,255,255,0) 0%, var(--card) 45%);
+  color:var(--accent);
+  font-family:inherit;
+  font-size:.75rem;
+  line-height:1.6;
+  cursor:pointer;
+  transition:color .18s;
+}
+.topic-more:hover{color:#1d4ed8}
+
+/* 展开后：按钮变成“收起”，放到文字下方、右对齐 */
+.topic-text-wrap.expanded .topic-more{
+  position:static;
+  display:block;
+  margin:6px 0 0 auto;
+  padding:0;
+  background:none;
+  color:var(--accent);
+}
+
+.papers{margin-top:15px;padding-top:14px;border-top:1px dashed var(--line)}
+.papers-head{
+  font-size:.78rem;font-weight:700;letter-spacing:1px;
+  color:var(--muted);margin-bottom:9px;
+}
+.paper-list{margin:0;padding-left:1.25em;font-size:.85rem;line-height:1.6}
+.paper-list li{margin-bottom:9px}
+.paper-list li:last-child{margin-bottom:0}
+.paper-list li::marker{color:var(--accent);font-weight:700}
+.paper-title{display:block;font-weight:600;color:#1e293b}
+.paper-meta{display:block;color:var(--muted);font-size:.8rem}
+.paper-link{font-size:.78rem;margin-left:4px}
+
+/* ---------- 兴趣标签 ---------- */
+.tags{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+.tag-pill{
+  font-size:.78rem;
+  padding:4px 12px;
+  border-radius:999px;
+  background:#f1f5f9;
+  color:#475569;
+  border:1px solid var(--line);
+}
+
+/* ---------- 页脚（单行三段，竖线分隔） ---------- */
+.footer{
+  margin-top:34px;
+  text-align:center;
+  font-size:.78rem;
+  line-height:2;
+  color:var(--muted);
+  padding:0 4px;
+}
+.footer-sep{
+  margin:0 8px;
+  opacity:.45;
+}
+
+/* ============================================================
+   3. 响应式
+   ============================================================ */
+@media (max-width:900px){
+  .layout{grid-template-columns:1fr}
+  .layout > main.col{order:-1}
+  .layout > aside.col{order:0}
+  .topic{grid-template-columns:1fr}
+  .topic-media img{
+    aspect-ratio:auto;
+    height:auto;
+    max-height:35vh;        /* 防止纵幅图占满整屏，可按需调 */
+    object-fit:contain;
+  }
+  /* 窄屏展开时保持单列，不要让图片浮动把文字挤成窄条 */
+  .topic.expanded{
+    display:grid;
+    grid-template-columns:1fr;
+    overflow:visible;
+  }
+  .topic.expanded .topic-media{
+    float:none;
+    width:auto;
+    margin:0;
+  }
+  .topic.expanded .papers{
+    overflow:visible;
+  }
+}
+@media (max-width:640px){
+  .wrap{padding:14px 12px 36px}
+  .hero{padding:24px 20px 42px}          /* 原为 24px 20px，底部多留空间 */
+  #heroCredit{right:12px;bottom:10px}
+  .hero-credit{font-size:.6rem}
+  .hero-main{flex-direction:column;text-align:center;gap:16px}
+  .hero .avatar{width:106px;height:106px}
+  .hero-info h1{font-size:1.5rem}
+  .contact-bar{justify-content:center}
+  .card{padding:16px}
+  .carousel{aspect-ratio:16/9}
+  .slide-caption{left:12px;bottom:11px;max-width:calc(100% - 84px);font-size:.78rem;padding:4px 11px}
+  .para{text-align:left}
+  .lang-toggle{top:12px;right:12px;min-width:46px;padding:6px 12px}
+  .footer{font-size:.74rem;line-height:1.9}
+  .footer-sep{margin:0 5px}
+  .carousel-arrow{width:32px;height:32px}
+  .carousel-arrow.prev{left:8px}
+  .carousel-arrow.next{right:8px}
+  .carousel-arrow svg{width:16px;height:16px}
+}
+</style>
+</head>
+
+<body>
+
+<div class="wrap">
+
+  <!-- 顶部横栏：按钮固定在横栏内部右上角 -->
+  <header class="hero" id="hero">
+    <button class="lang-toggle" id="langToggle" type="button">
+      <span id="langLabel">EN</span>
+    </button>
+    <div class="hero-main" id="heroMain"></div>
+    <div id="heroCredit"></div>
+  </header>
+
+  <!-- 主体两栏 -->
+  <div class="layout">
+
+    <!-- 左列 -->
+    <aside class="col">
+      <section class="card">
+        <h2 id="h-education"></h2>
+        <div id="education"></div>
+      </section>
+
+      <section class="card">
+        <h2 id="h-status"></h2>
+        <div id="status"></div>
+      </section>
+
+      <section class="card">
+        <h2 id="h-todo"></h2>
+        <ul class="todo" id="todo"></ul>
+      </section>
+
+      <!-- 友情链接 -->
+      <section class="card">
+        <h2 id="h-links"></h2>
+        <div id="friendLinks"></div>
+      </section>
+    </aside>
+
+    <!-- 右列 -->
+    <main class="col">
+      <section class="card card-flush">
+        <div class="carousel" id="carousel"></div>
+      </section>
+
+      <section class="card">
+        <h2 id="h-intro"></h2>
+        <div id="intro"></div>
+      </section>
+
+      <div class="topics" id="topics"></div>
+
+      <section class="card">
+        <h2 id="h-hobbies"></h2>
+        <div id="hobbies"></div>
+      </section>
+    </main>
+  </div>
+
+  <footer class="footer" id="footer"></footer>
+</div>
+
+<!-- 图片放大预览 -->
+<div class="lightbox" id="lightbox" aria-hidden="true">
+  <button class="lightbox-close" id="lightboxClose" type="button" aria-label="关闭">×</button>
+  <figure class="lightbox-figure">
+    <img class="lightbox-img" id="lightboxImg" src="" alt="">
+    <figcaption class="lightbox-caption" id="lightboxCaption"></figcaption>
+  </figure>
+</div>
+
+<script>
+/* ================================================================
+   ★★★  只 需 修 改 下 面 的  DATA  对 象  即 可  ★★★
+
+   双语写法说明：
+   凡是有中英文两版的文字，都写成  { zh: "中文", en: "English" }
+   只有一种语言的内容（论文标题、邮箱、网址等），直接写字符串即可。
+   ================================================================ */
+const DATA = {
+
+  /* ---------- 0. 站点元信息 ---------- */
+  siteMeta: {
+    /* 最后更新日期：
+       - "auto" 表示自动读取本文件的最后修改时间（document.lastModified）
+       - 也可以手写成 { zh:"2026年11月10日", en:"November 10, 2026" } 固定不变
+       ⚠️ 部署到托管平台后，服务器若未返回准确的 Last-Modified，
+          auto 可能显示为访问时间或构建时间，此时建议改回手写。 */
+    lastUpdated: "auto"
+  },
+
+  /* ---------- 1. 基础信息 ---------- */
+  profile: {
+    photo : "images/profile.jpg", // 换成 "images/avatar.jpg"
+    /* 顶部横栏背景图：M51 星系哈勃照片。可换成 "images/hero-m51.jpg" */
+    heroImage: "images/heic0506a.jpg", // "https://cdn.esahubble.org/archives/images/screen/heic0506a.jpg",
+    /* 背景图出处：留空对象 {} 或删掉此字段则不显示 */
+    heroImageCredit: {
+      text: { zh:"M51 星系, NASA/ESA 哈勃太空望远镜",
+              en:"Image: M51, NASA/ESA Hubble Space Telescope" },
+      href: "https://esahubble.org/images/heic0506a/"
+    },
+    name  : { zh:"蒋 桢（Zhen Jiang）", en:"Zhen Jiang (蒋 桢)" },
+    title : { zh:"助理研究员 · 星系形成",
+              en:"Assistant Researcher · Galaxy Formation" },
+    affil : { zh:"中国科学院国家天文台 · 计算宇宙学研究团组",
+              en:"National Astronomical Observatories, Chinese Academy of Sciences · Computational Cosmology Group" }
+  },
+
+  /* ---------- 2. 联系方式（标签为标识符，无需翻译） ----------
+     icon 可选：mail / github / orcid / scholar / link        */
+  contacts: [
+    { icon:"mail",    label:"jiangzhen@nao.cas.cn",     href:"mailto:jiangzhen@nao.cas.cn" },
+    { icon:"orcid",   label:"ORCID 0000-0003-2405-5930",  href:"https://orcid.org/0000-0003-2405-5930/" },
+    { icon:"github",  label:"github.com/jiangzhen228",      href:"https://github.com/jiangzhen228/" }//,
+    //{ icon:"scholar", label:"Google Scholar",             href:"https://scholar.google.com/" }
+  ],
+
+  /* ---------- 3. 教育经历 ---------- */
+  education: [
+    { period: { zh:"2024 至今", en:"2024 to present" },
+      school: { zh:"中国科学院国家天文台", en:"National Astronomical Observatories, Chinese Academy of Sciences" },
+      degree: { zh:"研究助理（计算宇宙学研究团组）",
+                en:"Research Assistant (Computational Cosmology Group)" } },
+    { period: { zh:"2020 — 2023", en:"2020 — 2023" },
+      school: { zh:"清华大学", en:"Tsinghua University" },
+      degree: { zh:"博士后（天文系）",
+                en:"Post-doc (Department of Astronomy)" } },
+    { period: { zh:"2012 — 2020", en:"2012 — 2020" },
+      school: { zh:"中国科学院国家天文台", en:"National Astronomical Observatories, Chinese Academy of Sciences" },
+      degree: { zh:"天体物理 博士",
+                en:"Ph.D. in Astrophysics" } },
+    { period: { zh:"2007 — 2012", en:"2007 — 2012" },
+      school: { zh:"南京大学", en:"Nanjing University" },
+      degree: { zh:"天文学 理学学士",
+                en:"B.Sc. in Astronomy" } }
+  ],
+
+  /* ---------- 4. 当前动态 ----------
+     efficiency : 今日工作效率评分（0–100）
+     updated    : 评分时间
+                  - "auto" 表示自动读取本文件的最后修改时间
+                  - 也可手写 { zh:"今天 18:20", en:"Today 18:20" }
+     state      : 当前状态，填下面 statusOptions 里的 key 之一：
+                  "normal"（正常工作） / "travel"（外地出差） / "vacation"（度假休息）
+     ------------------------------------------------------------ */
+  currentStatus: {
+    efficiency: 40,
+    updated   : "auto",
+    state     : "normal"
+  },
+  statusOptions: [
+    { key:"normal",   icon:"💻", zh:"正常工作", en:"Working normally" },
+    { key:"travel",   icon:"✈️", zh:"外地出差", en:"On business travel" },
+    { key:"vacation", icon:"🏖️", zh:"度假休息", en:"On vacation" }
+  ],
+
+  /* ---------- 5. 待办事项 ----------
+     页面最多显示 5 条，第 6 行自动显示"……"
+     type 只能是 "ongoing" 或 "todo"                          */
+  todo: [
+    { type:"ongoing", text:{ zh:"SPHEREx图像找源算法",
+                             en:"Source extraction in SPHEREx images" } },
+    { type:"todo",    text:{ zh:"使用MCMC研究不同类型星系的演化",
+                             en:"The evolution of various types of galaxies utlizing MCMC" } },
+    { type:"todo",    text:{ zh:"超大质量黑洞并合事件率的拟合",
+                             en:"Fit the event rates of SMBH mergers" } },
+    { type:"todo",    text:{ zh:"GABE 2.0论文初稿修改",
+                             en:"Revise the first-draft of the GABE 2.0 paper" } },
+    { type:"ongoing",    text:{ zh:"开发一个曝光计时器",
+                             en:"Make an Exposure Time Calculator" } }
+  ],
+
+  /* ---------- 6. 友情链接 ----------
+     group      : 分组标题（双语）
+     items.name : 链接名称（一般不需翻译，直接写字符串）
+     items.desc : 一句话说明（可选，双语；留空则不显示）
+     items.href : 链接地址
+     ------------------------------------------------------------ */
+  friendLinks: [
+    {
+      group: { zh:"科研工具", en:"Research Tools" },
+      items: [
+        { name:"arXiv",         desc:{ zh:"预印本平台",     en:"Preprints" },        href:"https://arxiv.org/" },
+        { name:"NASA ADS",      desc:{ zh:"文献检索",       en:"Literature search" }, href:"https://ui.adsabs.harvard.edu/" },
+        // { name:"Google Scholar",desc:{ zh:"学术搜索",       en:"Academic search" },   href:"https://scholar.google.com/" },
+        { name:"Overleaf",      desc:{ zh:"在线 LaTeX 写作", en:"Online LaTeX" },     href:"https://www.overleaf.com/" }
+      ]
+    },
+    {
+      group: { zh:"合作者主页", en:"Collaborators" },
+      items: [
+        { name:"Shihong Liao (廖世鸿)",  desc:{ zh:"流体力学数值模拟", en:"Hydro-dynamical Simulation" }, href:"https://www.shihongliao.com/" },
+        { name:"Lan Wang (王岚)",  desc:{ zh:"星系形成", en:"Galaxy Formation" }, href:"https://doudoulan.github.io/" }
+      ]
+    },
+    {
+      group: { zh:"单位与组织", en:"Institutions" },
+      items: [
+        { name:"CCG",       desc:{ zh:"国家天文台计算宇宙学研究团组", en:"Computational Cosmology Group, NAOC" }, href:"https://ccg-naoc.github.io/index.html" },        
+        { name:"NAOC",       desc:{ zh:"中国科学院国家天文台", en:"National Astronomical Observatories, Chinese Academy of Sciences" }, href:"https://www.bao.ac.cn/" },
+        { name:"DoA, THU",   desc:{ zh:"清华大学天文系", en:"Department of Astronomy, Tsinghua University" },     href:"https://astro.tsinghua.edu.cn/en/index.htm" },
+        { name:"Astronomy, NJU", desc:{ zh:"南京大学天文与空间科学学院", en:"School of Astronomy and Space Science, Nanjing University" },   href:"https://astronomy.nju.edu.cn/EN/index.html" }
+      ]
+    }
+  ],
+
+  /* ---------- 7. 照片轮播 ----------
+     title 为图片左下角标题；留空对象 {} 或空字符串则不显示标题
+     ------------------------------------------------------------ */
+  carouselInterval: 5000,   // 切换间隔（毫秒）
+  carousel: [
+    { src:"images/carousel1.jpg",
+      alt  :{ zh:"看！那就是银心！", en:"Look! That's the Galactic Center!" },
+      title:{ zh:`"看！那就是银心！"`, en:`"Look! That's the Galactic Center!"` } },
+    { src:"images/carousel2.jpg",
+      alt  :{ zh:"遥望银河", en:"Gazing upon the Milky Way" },
+      title:{ zh:"遥望银河", en:"Gazing upon the Milky Way" } },
+    { src:"images/carousel3.jpg",
+      alt  :{ zh:"参观北京兴隆 LAMOST 望远镜", en:"Visiting LAMOST, Xinglong, Beijing" },
+      title:{ zh:"参观北京兴隆 LAMOST 望远镜", en:"Visiting LAMOST, Xinglong, Beijing" } }
+  ],
+
+  /* ---------- 8. 个人简介（每段一个对象） ---------- */
+  intro: [
+    { zh:"Hi there. This is Zhen Jiang (蒋桢), a research assistant at NAOC, working in the field of galaxy formation. I was an amateur astronomer when I was a kid, and then completed my astrophysics training all the way through Nanjing University, NAOC, and Tsinghua University.",
+      en:"Hi there. This is Zhen Jiang (蒋桢), a research assistant at NAOC, working in the field of galaxy formation. I was an amateur astronomer when I was a kid, and then completed my astrophysics training all the way through Nanjing University, NAOC, and Tsinghua University." },
+    { zh:"I am interested in almost everything about galaxies—literally everything, well, maybe except galactic dynamics, which I’m really not good at—so I chose semi-analytic models (SAMs) as my PhD project. I developed a set of SAMs by myself during my PhD, and since then my research interests focus on the application of SAMs on the evolution of gravitational wave sources, such as double-degenerate mergers and super-massive black hole mergers. Recently, I start to work on narrow band phtotometry, which I believe would be a very promising astronomical observational method in the near future.",
+      en:"I am interested in almost everything about galaxies—literally everything, well, maybe except galactic dynamics, which I’m really not good at—so I chose semi-analytic models (SAMs) as my PhD project. I developed a set of SAMs by myself during my PhD, and since then my research interests focus on the application of SAMs on the evolution of gravitational wave sources, such as double-degenerate mergers and super-massive black hole mergers. Recently, I start to work on narrow band phtotometry, which I believe would be a very promising astronomical observational method in the near future." },
+    { zh:"All these research topics are described in details in the following sections, if you are interested. ^_^",
+      en:"All these research topics are described in details in the following sections, if you are interested. ^_^" }
+  ],
+
+  /* ---------- 9. 研究主题模块（可增删任意多个） ---------- */
+  topics: [
+    {
+      title: { zh:"研究主题一 · 半解析模型",
+               en:"Research Topic I · Semi-analytic Models" },
+      image: "images/cycle.jpg",
+      imageCaption: { zh:"Baryonic exchange in SAM (<a href='https://scixplorer.org/abs/2019RAA....19..151J/abstract'>Jiang et al., 2019</a>)",
+                  en:"Baryonic exchange in SAM (<a href='https://scixplorer.org/abs/2019RAA....19..151J/abstract'>Jiang et al., 2019</a>)" },
+      paragraphs: [
+        { zh:"<b>[What is SAM]</b> Semi-analytic Model (SAM) is a traditional way to simulate the evolution of galaxies in the dark matter halo merger framework for a ΛCDM cosmology. The idea of SAMs can be traced all the way back to the 1970s in <a href='https://scixplorer.org/abs/1978MNRAS.183..341W/abstract'>White & Rees (1978)</a>, and the classical realisation in <a href='https://scixplorer.org/abs/1991ApJ...379...52W/abstract'>White & Frenk (1991)</a>.",
+          en:"<b>[What is SAM]</b> Semi-analytic Model (SAM) is a traditional way to simulate the evolution of galaxies in the dark matter halo merger framework for a ΛCDM cosmology. The idea of SAMs can be traced all the way back to the 1970s in <a href='https://scixplorer.org/abs/1978MNRAS.183..341W/abstract'>White & Rees (1978)</a>, and the classical realisation in <a href='https://scixplorer.org/abs/1991ApJ...379...52W/abstract'>White & Frenk (1991)</a>."},
+        { zh:"As shown in the figure, SAMs divide the baryonic matter of galaxies into different components, including hot gas, cold gas, stars, ejecta, and black holes, and try to describe all the galactic processes in an analytic way. Some of the physical processes can be pictured with simplified theoretical models, such as cooling; some other processes can be described with phenomenological prescriptions, such as supernova feedback; and some processes are too complex and non-linear to be described in analytic formulas, such as merger histroy, stellar evolution, and cooling efficiency. For the last ones, we have no other choice but to adopt pre-calculated tables. This is why we call this method \"semi\"-analytic models.",
+        en:"As shown in the figure, SAMs divide the baryonic matter of galaxies into different components, including hot gas, cold gas, stars, ejecta, and black holes, and try to describe all the galactic processes in an analytic way. Some of the physical processes can be pictured with simplified theoretical models, such as cooling; some other processes can be described with phenomenological prescriptions, such as supernova feedback; and some processes are too complex and non-linear to be described in analytic formulas, such as merger histroy, stellar evolution, and cooling efficiency. For the last ones, we have no other choice but to adopt pre-calculated tables. This is why we call this method \"semi\"-analytic models."},
+        { zh:"By describing as many galacitc processes in an analytic way as possible, SAM has a extremely high efficiency. It can simulate the evolution of tens of millions of galaxies in a few hours. Therefore, it is suitable for the exploration of model parameter space, the study of interactions between different processes, and generate mock catalogues for a large volume. SAM has become a traditional and standard method in the field of galaxy formation, in some sense, reflecting our collective understanding of galaxy evolution.",
+          en:"By describing as many galacitc processes in an analytic way as possible, SAM has a extremely high efficiency. It can simulate the evolution of tens of millions of galaxies in a few hours. Therefore, it is suitable for the exploration of model parameter space, the study of interactions between different processes, and generate mock catalogues for a large volume. SAM has become a traditional and standard method in the field of galaxy formation, in some sense, reflecting our collective understanding of galaxy evolution."},
+        { zh:"<b>[What I did]</b> I developed a set of SAMs <b>GABE</b> (Galaxy Assembly with Binary Evolution) by myself during my PhD (<a href='https://scixplorer.org/abs/2019RAA....19..151J/abstract'>Jiang et al., 2019</a>), based on the physical model of <a href='https://scixplorer.org/abs/2011MNRAS.413..101G/abstract'>Guo et al. (2011)</a>. I introduced binary evolution into SAMs by adopting the Yunnan-II stellar population synthesis model (SPSM), which includes various binary interactions. By doing so, we were able to study binary evolution related processes not only on a stellar population scale, but also on a galactic scale.",
+        en:"<b>[What I did]</b> I developed a set of SAMs <b>GABE</b> (Galaxy Assembly with Binary Evolution) by myself during my PhD (<a href='https://scixplorer.org/abs/2019RAA....19..151J/abstract'>Jiang et al., 2019</a>), based on the physical model of <a href='https://scixplorer.org/abs/2011MNRAS.413..101G/abstract'>Guo et al. (2011)</a>. I introduced binary evolution into SAMs by adopting the Yunnan-II stellar population synthesis model (SPSM), which includes various binary interactions. By doing so, we were able to study binary evolution related processes not only on a stellar population scale, but also on a galactic scale."},
+        { zh:"GABE has been used in some studies on the gravitational wave (GW) sources and their signals, which will be introduced in the next section, and some studies on galaxy formation. For example, we used GABE to examine the binary star formation model of UV-upturn galaxies, and found that the induced formation of extreme horizontal branch stars through binary interactions can provide enough FUV flux in old stellar populations and reproduce a relatively large fraction of UV-upturn galaxies, recovering the observed evolution of galaxy colors (<a href='https://scixplorer.org/abs/2025MNRAS.540.3770J/abstract'>Jiang et al., 2025</a>).",
+        en:"GABE has been used in some studies on the gravitational wave (GW) sources and their signals, which will be introduced in the next section, and some studies on galaxy formation. For example, we used GABE to examine the binary star formation model of UV-upturn galaxies, and found that the induced formation of extreme horizontal branch stars through binary interactions can provide enough FUV flux in old stellar populations and reproduce a relatively large fraction of UV-upturn galaxies, recovering the observed evolution of galaxy colors (<a href='https://scixplorer.org/abs/2025MNRAS.540.3770J/abstract'>Jiang et al., 2025</a>)."},
+        { zh:"A new version of GABE is still under developing. We aim to promote the application of GABE in the field of GWs, by refining GW related processes, including metal-enrichment, multiple choices of SPSM, seeding and merging of super-massive black holes, and maybe even the evolution of globular clusters. The final goal is to build a bridge between detected GW signals and the underlying galactic physics.",
+        en:"A new version of GABE is still under developing. We aim to promote the application of GABE in the field of GWs, by refining GW related processes, including metal-enrichment, multiple choices of SPSM, seeding and merging of super-massive black holes, and maybe even the evolution of globular clusters. The final goal is to build a bridge between detected GW signals and the underlying galactic physics."}
+      ],
+      papers: [
+        { title:"GABE: Galaxy Assembly with Binary Evolution",
+          authors:"Jiang Z., Wang J., Gao L., Zhang F., et al.",
+          venue:"RAA", year:2019, link:"https://scixplorer.org/abs/2019RAA....19..151J/abstract" },
+        { title:"Two categories of UV-upturn galaxies revealed by semi-analytic models",
+          authors:"Jiang Z., Li C., Zhang F., Zhou S.,",
+          venue:"MNRAS", year:2025, link:"https://scixplorer.org/abs/2025MNRAS.540.3770J/abstract" }
+      ]
+    },
+    {
+      title: { zh:"研究主题二 · 引力波源天体",
+               en:"Research Topic II · Gravitational Wave Sources" },
+      image: "images/SGWB_total.jpg",
+      imageCaption: { zh:"GW energy spectra of various merging systems (<a href='https://scixplorer.org/abs/2024MNRAS.527.5616L/abstract'>Li et al., 2024</a>)",
+            en:"GW energy spectra of various merging systems (<a href='https://scixplorer.org/abs/2024MNRAS.527.5616L/abstract'>Li et al., 2024</a>)" },
+      paragraphs: [
+        { zh:"To be completed ...",
+          en:"To be completed ..." }
+      ],
+      papers: [
+        { title:"Science with the TianQin observatory: Preliminary results on massive black hole binaries",
+          authors:"Wang H.-T., Jiang Z., Sesana A., Barausse E., et al.",
+          venue:"PhRvD", year:2019, link:"https://scixplorer.org/abs/2019PhRvD.100d3003W/abstract" },
+        { title:"Exploring the multiband gravitational wave background with a semi-analytic galaxy formation model",
+          authors:"Li Z., Jiang Z., Fan X.-L., Chen Y., et al.",
+          venue:"MNRAS", year:2024, link:"https://scixplorer.org/abs/2024MNRAS.527.5616L/abstract" }
+      ]
+    },
+    {
+      title: { zh:"研究主题三 · 窄带测光",
+               en:"Research Topic III · Narrow-band Photometry" },
+      image: "images/Spectral_Response_SPHEREx.jpg",
+      imageCaption: { zh:"Spectral response functions for all six detectors of SPHEREx (<a href='https://scixplorer.org/abs/2026ApJS..284...10H/abstract'>Hui et al., 2026</a>)",
+            en:"Spectral response functions for all six detectors of SPHEREx (<a href='https://scixplorer.org/abs/2026ApJS..284...10H/abstract'>Hui et al., 2026</a>)" },
+      paragraphs: [
+        { zh:"To be completed ...",
+          en:"To be completed ..." }
+      ],
+      papers: [
+      ]
+    }
+  ],
+
+  /* ---------- 10. 我的另一面 ---------- */
+  hobbies: {
+    paragraphs: [
+      { zh:"Outside work, I am a heavy Bilibili user. My interests on Bilibili include anime, gaming, sci-fi, current affairs, and educational content, such as economics, arts, physics, computer science, etc.",//"工作之余，我是个重度的B站用户。感兴趣的视频包括动漫、游戏、科幻、时政，以及经济、艺术、物理、计算机等科普内容。",
+        en:"Outside work, I am a heavy Bilibili user. My interests on Bilibili include anime, gaming, sci-fi, current affairs, and educational content, such as economics, arts, physics, computer science, etc." },
+      { zh:"I also play a lot of video games. I grew up playing Pokémon and Fire Emblem on the GBA. Later, I spent a lot of time playing MMORPGs such as World of Warcraft and Final Fantasy XIV. To me, games are not just games; they are other worlds created by human imagination, just like novels, music, and paintings.",//"此外我也玩过很多游戏。从小就很喜欢玩宝可梦、火焰纹章等GBA游戏。后面也花了很多时间在MMORPG上，例如魔兽世界和最终幻想14。对我来说，游戏不仅仅是游戏，而是像小说、绘画一样，是人类用自己的想象力构建出的另一个世界。",
+        en:"I also play a lot of video games. I grew up playing Pokémon and Fire Emblem on the GBA. Later, I spent a lot of time playing MMORPGs such as World of Warcraft and Final Fantasy XIV. To me, games are not just games; they are other worlds created by human imagination, just like novels, music, and paintings." }
+    ],
+    tags: [
+      { zh:"B站",       en:"Bilibili" },
+      { zh:"游戏",      en:"Video games" },
+      { zh:"科幻小说",   en:"Sci-fi novels" }
+    ]
+  }
+};
+
+/* ================================================================
+   以下为多语言渲染逻辑，一般不需要修改
+   ================================================================ */
+
+/* ---------- 界面固定文案（双语） ---------- */
+const UI = {
+  headings: {
+    education: { zh:"教育和工作经历",   en:"Education & Employment" },
+    status:    { zh:"近期动态",   en:"Recent Status" },
+    todo:      { zh:"待办事项",   en:"To-Do List" },
+    links:     { zh:"友情链接",   en:"Useful Links" },
+    intro:     { zh:"个人简介",   en:"About Me" },
+    hobbies:   { zh:"科研之外", en:"Beyond Research" }
+  },
+  effLabel : { zh:"工作效率",     en:"Work Efficiency" },
+  effTime  : { zh:"评分时间",     en:"Rated at" },
+  stateLabel:{ zh:"当前状态",     en:"Current State" },
+  paperHead: { zh:"相 关 论 文",  en:"SELECTED PUBLICATIONS" },
+  topicMore: { zh:"更多", en:"More" },
+  topicLess: { zh:"收起", en:"Less" },
+  todoTag  : {
+    ongoing: { zh:"进行中", en:"on going" },
+    todo:    { zh:"待办",   en:"to do" }
+  },
+  carouselPrev: { zh:"上一张", en:"Previous image" },
+  carouselNext: { zh:"下一张", en:"Next image" },
+  /* 页脚三段文案（合并为一行显示） */
+  footer: {
+    copyright: { zh:"© {year} 蒋桢 · 个人主页",
+                 en:"© {year} Zhen Jiang · Personal Homepage" },
+    updated  : { zh:"最后更新于 {date}",
+                 en:"Last updated on {date}" },
+    credit   : { zh:"本网页使用 DeepSeek 辅助开发",
+                 en:"This webpage is developed with assistance from DeepSeek" }
+  },
+  langSwitch: { zh:"EN", en:"中" }
+};
+
+/* ---------- 图标 ---------- */
+const ICONS = {
+  mail: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="4.5" width="19" height="15" rx="2.5"/><path d="m3 7 9 6 9-6"/></svg>',
+  github: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 .5C5.73.5.5 5.73.5 12c0 5.08 3.29 9.39 7.86 10.91.58.11.79-.25.79-.56v-2c-3.2.7-3.88-1.54-3.88-1.54-.53-1.34-1.29-1.7-1.29-1.7-1.05-.72.08-.71.08-.71 1.16.08 1.77 1.19 1.77 1.19 1.03 1.77 2.7 1.26 3.36.96.1-.75.4-1.26.73-1.55-2.55-.29-5.23-1.28-5.23-5.7 0-1.26.45-2.29 1.19-3.1-.12-.29-.52-1.46.11-3.05 0 0 .97-.31 3.18 1.18a11 11 0 0 1 5.8 0c2.2-1.49 3.17-1.18 3.17-1.18.63 1.59.23 2.76.11 3.05.74.81 1.19 1.84 1.19 3.1 0 4.43-2.69 5.4-5.25 5.69.41.36.78 1.06.78 2.14v3.17c0 .31.21.68.8.56A11.51 11.51 0 0 0 23.5 12C23.5 5.73 18.27.5 12 .5z"/></svg>',
+  orcid: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12s5.37 12 12 12 12-5.37 12-12S18.63 0 12 0zM7.4 18.4H5.9V8.3h1.5v10.1zM6.65 7.2a.9.9 0 1 1 0-1.8.9.9 0 0 1 0 1.8zm11.05 11.2h-1.5v-5.3c0-1.3-.5-2.1-1.7-2.1-1.2 0-1.9.8-1.9 2.1v5.3h-1.5V8.3h1.5v1.2c.6-.9 1.6-1.4 2.6-1.4 2 0 3.4 1.3 3.4 3.9v6.4z"/></svg>',
+  scholar: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m22 10-10-5L2 10l10 5 10-5Z"/><path d="M6 12.5V17c0 1.1 2.7 2 6 2s6-.9 6-2v-4.5"/></svg>',
+  link: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.5.5l3-3a5 5 0 0 0-7-7l-1.7 1.7"/><path d="M14 11a5 5 0 0 0-7.5-.5l-3 3a5 5 0 0 0 7 7l1.7-1.7"/></svg>'
+};
+
+/* ---------- 当前语言 ---------- */
+// let currentLang = 'zh';
+let currentLang = (navigator.language || '').toLowerCase().startsWith('en') ? 'en' : 'zh';
+try {
+  const saved = localStorage.getItem('site-lang');
+  if (saved === 'zh' || saved === 'en') currentLang = saved;
+} catch (e) { /* localStorage 不可用时忽略 */ }
+
+/* ---------- 取当前语言文本 ----------
+   支持字符串、{zh,en} 对象、null；数组请在外层自行 map   */
+function pick(v){
+  if (v === null || v === undefined) return '';
+  if (typeof v === 'object' && !Array.isArray(v)) {
+    return (v[currentLang] !== undefined) ? v[currentLang]
+         : (v.zh !== undefined ? v.zh : (v.en !== undefined ? v.en : ''));
+  }
+  return v;
+}
+
+/* ---------- 评分颜色：0 红 → 20 橙 → 40 黄 → 60 绿 → 80 蓝 → 100 蓝紫 ----------
+   每 20 分为一个颜色节点，节点之间线性插值，分数变化时颜色平滑过渡。   */
+const SCORE_COLORS = [
+  { at: 0,   rgb:[239,  68,  68] },  // 红   #ef4444
+  { at: 20,  rgb:[249, 115,  22] },  // 橙   #f97316
+  { at: 40,  rgb:[234, 179,   8] },  // 黄   #eab308
+  { at: 60,  rgb:[ 34, 197,  94] },  // 绿   #22c55e
+  { at: 80,  rgb:[ 59, 130, 246] },  // 蓝   #3b82f6
+  { at: 100, rgb:[139,  92, 246] }   // 蓝紫 #8b5cf6
+];
+
+function scoreColor(pct){
+  const p = Math.max(0, Math.min(100, Number(pct) || 0));
+  for (let i = 0; i < SCORE_COLORS.length - 1; i++) {
+    const a = SCORE_COLORS[i], b = SCORE_COLORS[i + 1];
+    if (p >= a.at && p <= b.at) {
+      const t = (p - a.at) / (b.at - a.at);
+      const rgb = a.rgb.map((v, k) => Math.round(v + (b.rgb[k] - v) * t));
+      return `rgb(${rgb.join(',')})`;
+    }
+  }
+  return `rgb(${SCORE_COLORS[SCORE_COLORS.length - 1].rgb.join(',')})`;
+}
+
+/* ---------- 日期时间格式化与解析 ----------
+   withTime = true  显示到分钟；false 只显示日期               */
+const EN_MONTHS = ["January","February","March","April","May","June",
+                   "July","August","September","October","November","December"];
+
+function formatDateTime(date, withTime){
+  const y  = date.getFullYear();
+  const m  = date.getMonth() + 1;
+  const d  = date.getDate();
+  const hh = String(date.getHours()).padStart(2, '0');
+  const mm = String(date.getMinutes()).padStart(2, '0');
+
+  if (currentLang === 'zh') {
+    return withTime
+      ? `${y}年${m}月${d}日 ${hh}:${mm}`
+      : `${y}年${m}月${d}日`;
+  }
+  return withTime
+    ? `${EN_MONTHS[date.getMonth()]} ${d}, ${y} ${hh}:${mm}`
+    : `${EN_MONTHS[date.getMonth()]} ${d}, ${y}`;
+}
+
+/* 解析时间字段：
+   - "auto"          → 使用本文件的最后修改时间 document.lastModified
+   - {zh,en} / 字符串 → 原样取用当前语言文本                        */
+function resolveDateTime(v, withTime){
+  if (v === 'auto') {
+    const raw = document.lastModified;
+    let d = raw ? new Date(raw) : null;
+    if (!d || isNaN(d.getTime())) d = new Date();   // 读取失败时退回当前时间
+    return formatDateTime(d, withTime);
+  }
+  return pick(v);
+}
+
+/* ---------- 顶部横栏 ---------- */
+function renderHero(){
+  const p = DATA.profile;
+
+  /* 1. 背景图：M51 星系 + 深色渐变遮罩（保证文字可读） */
+  document.getElementById('hero').style.backgroundImage =
+    `linear-gradient(110deg, rgba(6,14,38,.82) 0%, rgba(10,24,62,.60) 48%, rgba(14,34,84,.42) 100%), url("${p.heroImage}")`;
+
+  /* 2. 头像 + 信息 + 联系方式（联系方式位于实验室信息下方） */
+  document.getElementById('heroMain').innerHTML = `
+    <img class="avatar" src="${p.photo}" alt="${pick(p.name)}">
+    <div class="hero-info">
+      <h1>${pick(p.name)}</h1>
+      <p class="subtitle">${pick(p.title)}</p>
+      <p class="affil">${pick(p.affil)}</p>
+      <nav class="contact-bar" id="contacts" aria-label="Contact"></nav>
+    </div>`;
+
+    /* 背景图出处 */
+  const credit = p.heroImageCredit;
+  const creditBox = document.getElementById('heroCredit');
+  if (creditBox) {
+    const text = credit ? pick(credit.text) : '';
+    if (!text) {
+      creditBox.innerHTML = '';
+    } else if (credit.href) {
+      creditBox.innerHTML =
+        `<a class="hero-credit" href="${credit.href}" target="_blank" rel="noopener">${text}</a>`;
+    } else {
+      creditBox.innerHTML = `<span class="hero-credit">${text}</span>`;
+    }
+  }
+}
+
+function renderContacts(){
+  const box = document.getElementById('contacts');
+  if (!box) return;
+  box.innerHTML = DATA.contacts.map(c => `
+    <a class="contact-item" href="${c.href}" target="_blank" rel="noopener">
+      ${ICONS[c.icon] || ICONS.link}<span>${c.label}</span>
+    </a>`).join('');
+}
+
+function renderEducation(){
+  document.getElementById('education').innerHTML = DATA.education.map(e => `
+    <div class="edu-item">
+      <div class="edu-period">${pick(e.period)}</div>
+      <div class="edu-school">${pick(e.school)}</div>
+      <div class="edu-degree">${pick(e.degree)}</div>
+    </div>`).join('');
+}
+
+function renderStatus(){
+  const s   = DATA.currentStatus;
+  const pct = Math.max(0, Math.min(100, Number(s.efficiency) || 0));
+  const color = scoreColor(pct);
+  const updatedText = resolveDateTime(s.updated, true);
+
+  const chips = DATA.statusOptions.map(o => {
+    const active = (o.key === s.state) ? ' active' : '';
+    return `<span class="chip${active}"><span>${o.icon || ''}</span>${pick(o)}</span>`;
+  }).join('');
+
+  document.getElementById('status').innerHTML = `
+    <div class="eff-head">
+      <span class="eff-label">${pick(UI.effLabel)}</span>
+      <span class="eff-score" style="color:${color}">${pct}<span class="unit">/100</span></span>
+    </div>
+    <div class="bar"><div class="bar-fill" style="width:${pct}%;background:${color}"></div></div>
+    <div class="eff-time">${pick(UI.effTime)}：${updatedText}</div>
+
+    <div class="status-block">
+      <div class="status-label">${pick(UI.stateLabel)}</div>
+      <div class="status-chips">${chips}</div>
+    </div>`;
+}
+
+function renderTodo(){
+  const MAX = 5;
+  const items = DATA.todo.slice(0, MAX).map(t => {
+    const cls = (t.type === 'ongoing') ? 'ongoing' : 'todo';
+    const tag = UI.todoTag[t.type] ? pick(UI.todoTag[t.type]) : t.type;
+    return `<li>
+              <span class="tag ${cls}">${tag}</span>
+              <span class="todo-text">${pick(t.text)}</span>
+            </li>`;
+  }).join('');
+  document.getElementById('todo').innerHTML = items +
+  `<li class="more"><span class="tag ghost" aria-hidden="true"></span><span>……</span></li>`;
+}
+
+/* ---------- 友情链接 ---------- */
+function renderFriendLinks(){
+  const box = document.getElementById('friendLinks');
+  if (!box) return;
+
+  const groups = DATA.friendLinks || [];
+  if (!groups.length) { box.innerHTML = ''; return; }
+
+  box.innerHTML = groups.map(g => {
+    const items = (g.items || []).map(it => {
+      const desc = it.desc ? pick(it.desc) : '';
+      return `<li>
+                <a class="friend-link" href="${it.href}" target="_blank" rel="noopener">
+                  <span class="friend-link-name">${it.name}</span>
+                  ${desc ? `<span class="friend-link-desc">${desc}</span>` : ''}
+                </a>
+              </li>`;
+    }).join('');
+
+    return `<div class="link-group">
+              <div class="link-group-title">${pick(g.group)}</div>
+              <ul class="link-list">${items}</ul>
+            </div>`;
+  }).join('');
+}
+
+/* ---------- 轮播（重建时清理旧定时器） ---------- */
+let carouselTimer = null;
+
+function renderCarousel(){
+  if (carouselTimer) { clearInterval(carouselTimer); carouselTimer = null; }
+
+  const box   = document.getElementById('carousel');
+  const items = DATA.carousel || [];
+  if (!items.length) { box.innerHTML = ''; return; }
+
+  box.innerHTML =
+    items.map((p, i) => {
+      const title = p.title ? pick(p.title) : '';
+      return `<div class="slide${i === 0 ? ' active' : ''}">
+                <img src="${p.src}" alt="${pick(p.alt) || title || ''}">
+                ${title ? `<div class="slide-caption">${title}</div>` : ''}
+              </div>`;
+    }).join('') +
+    `<button class="carousel-arrow prev" type="button" data-dir="-1" aria-label="${pick(UI.carouselPrev)}">
+       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+            stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+         <path d="m15 5-7 7 7 7"/>
+       </svg>
+     </button>
+     <button class="carousel-arrow next" type="button" data-dir="1" aria-label="${pick(UI.carouselNext)}">
+       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+            stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+         <path d="m9 5 7 7-7 7"/>
+       </svg>
+     </button>` +
+    `<div class="dots">` +
+    items.map((_, i) =>
+      `<button class="dot${i === 0 ? ' active' : ''}" data-i="${i}" aria-label="${i + 1}"></button>`
+    ).join('') +
+    `</div>`;
+
+  const slides = [...box.querySelectorAll('.slide')];
+  const dots   = [...box.querySelectorAll('.dot')];
+  const arrows = [...box.querySelectorAll('.carousel-arrow')];
+  let cur = 0;
+
+  function go(i){
+    cur = (i + slides.length) % slides.length;
+    slides.forEach((s, k) => s.classList.toggle('active', k === cur));
+    dots.forEach((d, k) => d.classList.toggle('active', k === cur));
+  }
+  function stop(){
+    if (carouselTimer) { clearInterval(carouselTimer); carouselTimer = null; }
+  }
+  function start(){
+    stop();
+    carouselTimer = setInterval(() => go(cur + 1), DATA.carouselInterval || 5000);
+  }
+
+  dots.forEach(d => d.addEventListener('click', () => { go(+d.dataset.i); start(); }));
+  arrows.forEach(btn => {
+    btn.addEventListener('click', () => {
+      go(cur + Number(btn.dataset.dir));
+      start();
+    });
+  });
+  /* 用 on* 赋值，避免重复渲染时叠加监听器 */
+  box.onmouseenter = stop;
+  box.onmouseleave = start;
+
+  start();
+}
+
+function renderIntro(){
+  document.getElementById('intro').innerHTML =
+    DATA.intro.map(p => `<p class="para">${pick(p)}</p>`).join('');
+}
+
+function renderTopics(){
+  document.getElementById('topics').innerHTML = DATA.topics.map(t => {
+    const papers = (t.papers && t.papers.length) ? `
+      <div class="papers">
+        <div class="papers-head">${pick(UI.paperHead)}</div>
+        <ol class="paper-list">
+          ${t.papers.map(p => `
+            <li>
+              <span class="paper-title">${p.title}${p.link ? `<a class="paper-link" href="${p.link}" target="_blank" rel="noopener">[ADS]</a>` : ''}</span>
+              <span class="paper-meta">${p.authors} · <em>${p.venue}</em>, ${p.year}</span>
+            </li>`).join('')}
+        </ol>
+      </div>` : '';
+
+    return `
+      <section class="card">
+        <h2>${pick(t.title)}</h2>
+        <div class="topic">
+          <div class="topic-media">
+            <img src="${t.image}" alt="${pick(t.title)}">
+            ${t.imageCaption ? `<div class="topic-media-caption">${pick(t.imageCaption)}</div>` : ''}
+          </div>
+          <div class="topic-body">
+            <div class="topic-text-wrap">
+              <div class="topic-text">
+                ${t.paragraphs.map(p => `<p class="para">${pick(p)}</p>`).join('')}
+              </div>
+              <button class="topic-more" type="button"></button>
+            </div>
+            ${papers}
+          </div>
+        </div>
+      </section>`;
+  }).join('');
+
+  /* 初始化“更多/收起” */
+  document.querySelectorAll('.topic-text-wrap').forEach(wrap => {
+    const text = wrap.querySelector('.topic-text');
+    const btn  = wrap.querySelector('.topic-more');
+    if (!text || !btn) return;
+
+    /* 内容没有超出固定高度时不显示按钮 */
+    if (text.scrollHeight <= text.clientHeight + 2) {
+      btn.style.display = 'none';
+      return;
+    }
+    btn.style.display = 'inline-flex';
+    btn.textContent = pick(UI.topicMore);
+
+    btn.addEventListener('click', () => {
+      const expanded = text.classList.toggle('expanded');
+      wrap.classList.toggle('expanded', expanded);
+
+      /* 通知外层 .topic 切换布局 */
+      const topicEl = wrap.closest('.topic');
+      if (topicEl) topicEl.classList.toggle('expanded', expanded);
+
+      btn.textContent = expanded ? pick(UI.topicLess) : pick(UI.topicMore);
+    });
+  });
+}
+
+function renderHobbies(){
+  const h = DATA.hobbies;
+  document.getElementById('hobbies').innerHTML =
+    h.paragraphs.map(p => `<p class="para">${pick(p)}</p>`).join('') +
+    (h.tags && h.tags.length
+      ? `<div class="tags">${h.tags.map(t => `<span class="tag-pill">${pick(t)}</span>`).join('')}</div>`
+      : '');
+}
+
+function renderHeadings(){
+  document.getElementById('h-education').textContent = pick(UI.headings.education);
+  document.getElementById('h-status').textContent    = pick(UI.headings.status);
+  document.getElementById('h-todo').textContent      = pick(UI.headings.todo);
+  document.getElementById('h-links').textContent     = pick(UI.headings.links);
+  document.getElementById('h-intro').textContent     = pick(UI.headings.intro);
+  document.getElementById('h-hobbies').textContent   = pick(UI.headings.hobbies);
+}
+
+/* ---------- 页脚（单行三段，竖线分隔） ---------- */
+function renderFooter(){
+  const year = new Date().getFullYear();
+  const date = resolveDateTime(DATA.siteMeta.lastUpdated, false);  // 页脚只显示日期
+
+  const copyright = pick(UI.footer.copyright).replace('{year}', year);
+  const updated   = pick(UI.footer.updated).replace('{date}', date);
+  const credit    = pick(UI.footer.credit);
+
+  const sep = '<span class="footer-sep">|</span>';
+
+  document.getElementById('footer').innerHTML =
+    `${copyright}${sep}${updated}${sep}${credit}`;
+}
+
+/* ---------- 图片放大预览 ---------- */
+function openLightbox(src, alt, caption){
+  const lb   = document.getElementById('lightbox');
+  const img  = document.getElementById('lightboxImg');
+  const cap  = document.getElementById('lightboxCaption');
+  if (!lb || !img || !src) return;
+
+  img.src = src;
+  img.alt = alt || '';
+  if (cap) cap.textContent = caption || '';
+
+  lb.classList.add('open');
+  lb.setAttribute('aria-hidden', 'false');
+  document.body.classList.add('lightbox-open');
+}
+
+function closeLightbox(){
+  const lb   = document.getElementById('lightbox');
+  const img  = document.getElementById('lightboxImg');
+  const cap  = document.getElementById('lightboxCaption');
+  if (!lb) return;
+
+  lb.classList.remove('open');
+  lb.setAttribute('aria-hidden', 'true');
+  document.body.classList.remove('lightbox-open');
+  setTimeout(() => {
+    if (!lb.classList.contains('open')) {
+      img.src = '';
+      if (cap) cap.textContent = '';
+    }
+  }, 260);
+}
+
+/* ---------- 汇总渲染 ---------- */
+function renderAll(){
+  renderHeadings();
+  renderHero();
+  renderContacts();     /* hero 内已生成 #contacts，这里填充 */
+  renderEducation();
+  renderStatus();
+  renderTodo();
+  renderFriendLinks();
+  renderCarousel();
+  renderIntro();
+  renderTopics();
+  renderHobbies();
+  renderFooter();
+}
+
+/* ---------- 语言切换 ---------- */
+function updateLangButton(){
+  document.getElementById('langLabel').textContent = pick(UI.langSwitch);
+  const btn = document.getElementById('langToggle');
+  btn.setAttribute('aria-label',
+    currentLang === 'zh' ? 'Switch to English' : '切换为中文');
+}
+
+function applyLang(){
+  document.documentElement.lang = (currentLang === 'zh') ? 'zh-CN' : 'en';
+  updateLangButton();
+  renderAll();
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('langToggle').addEventListener('click', () => {
+    currentLang = (currentLang === 'zh') ? 'en' : 'zh';
+    try { localStorage.setItem('site-lang', currentLang); } catch (e) {}
+    applyLang();
+  });
+
+    /* 图片放大预览的事件绑定（只绑一次，动态图片靠事件委托） */
+  document.addEventListener('click', (e) => {
+    const img = e.target.closest('.topic-media img');
+    if (!img) return;
+
+    /* 从图片的同级节点里取标题，没有就不传 */
+    const capEl = img.parentElement.querySelector('.topic-media-caption');
+    const caption = capEl ? capEl.textContent.trim() : '';
+
+    openLightbox(img.src, img.alt, caption);
+  });
+
+  document.getElementById('lightboxClose')
+    .addEventListener('click', closeLightbox);
+
+  document.getElementById('lightbox')
+    .addEventListener('click', (e) => {
+      if (e.target.id === 'lightbox') closeLightbox();   // 点遮罩空白处关闭
+    });
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') closeLightbox();
+  });
+
+  applyLang();
+});
+</script>
+</body>
+</html>
